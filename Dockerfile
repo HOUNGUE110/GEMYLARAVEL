@@ -24,6 +24,8 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Installation de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-interaction --optimize-autoloader --no-dev
-RUN php artisan migrate --force
 
+
+# Commande magique qui migre la base de données EN LIGNE puis démarre le serveur
+CMD php artisan migrate --force && apache2-foreground
 EXPOSE 80
