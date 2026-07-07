@@ -10,10 +10,17 @@ RUN apt-get update && apt-get install -y \
 # Activation du module de réécriture Apache
 RUN a2enmod rewrite
 
-# Configuration du dossier public de Laravel comme racine du serveur
+# Configuration du dossier public de Laravel comme racine et autorisation du .htaccess
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+
+# Forcer Apache à autoriser les fichiers .htaccess (règle l'erreur 404)
+RUN echo '<Directory /var/www/html/public>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>' >> /etc/apache2/apache2.conf
 
 # Copie du code du projet
 COPY . /var/www/html
@@ -25,7 +32,7 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-
-# Commande magique qui migre la base de données EN LIGNE puis démarre le serveur
-CMD php artisan migrate --force && apache2-foreground
 EXPOSE 80
+
+# Commande de démarrage avec migration automatique
+CMD php artisan migrate --force && apache2-foreground
