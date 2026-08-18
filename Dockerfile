@@ -31,9 +31,12 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Installation de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-interaction --optimize-autoloader --no-dev
-# Ajoute cette ligne dans ton Dockerfile juste avant l'EXPOSE 80
-RUN ln -s /etc/secrets/.env /var/www/html/.env
+
 EXPOSE 80
 
-# Commande de démarrage avec migration automatique
-CMD php artisan migrate --force && apache2-foreground
+# Exécution au démarrage du conteneur
+CMD ln -sf /etc/secrets/.env /var/www/html/.env && \
+    php artisan config:clear && \
+    php artisan cache:clear && \
+    php artisan migrate --force && \
+    apache2-foreground
