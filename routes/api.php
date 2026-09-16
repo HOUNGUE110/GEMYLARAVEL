@@ -29,3 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/markers/{id}', [MarkerController::class, 'update']);
     Route::delete('/markers/{id}', [MarkerController::class, 'destroy']);
 });
+
+Route::options('{any}', function () {
+    return response()->json([], 200);
+})->where('any', '.*');
