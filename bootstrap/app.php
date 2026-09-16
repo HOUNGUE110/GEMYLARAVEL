@@ -12,12 +12,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // 👈 Ajoute la configuration CORS ici
+        // Enregistre le middleware CORS natif de Laravel pour toutes les requêtes API
+        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
+
+        // Exclut les routes API de la vérification CSRF
         $middleware->validateCsrfTokens(except: [
+            'api/*',
             '*',
         ]);
         
-        $middleware->statefulApi();
+        // ⚠️ Décommente la ligne ci-dessous SEULEMENT si tu utilises des cookies Sanctum. 
+        // Comme tu utilises du localStorage avec 'Bearer token', il faut la retirer/commenter :
+        // $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
