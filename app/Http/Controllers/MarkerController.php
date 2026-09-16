@@ -29,3 +29,10 @@ public function store(Request $request)
         'marker' => $marker->load('user:id,nom,prenom')
     ], 201);
 }
+public function index()
+{
+    // Charge les marqueurs avec le prénom et nom de l'auteur
+    $markers = Marker::with('user:id,nom,prenom')->latest()->get();
+
+    return response()->json($markers, 200);
+}
