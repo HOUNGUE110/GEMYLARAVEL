@@ -4,8 +4,8 @@ public function store(Request $request)
         'titre' => 'required|string|max:100',
         'description' => 'required|string',
         'categorie' => 'required|string',
-        'latitude' => 'required|numeric|between:-90,90',
-        'longitude' => 'required|numeric|between:-180,180',
+        'latitude' => 'required|numeric',
+        'longitude' => 'required|numeric',
         'contact' => 'required|string|max:100',
     ]);
 
