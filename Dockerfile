@@ -37,6 +37,5 @@ EXPOSE 80
 # Exécution au démarrage du conteneur
 CMD ln -sf /etc/secrets/.env /var/www/html/.env && \
     php artisan config:clear && \
-    php artisan cache:clear && \
     php artisan migrate --force && \
     apache2-foreground
